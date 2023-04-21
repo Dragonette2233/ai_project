@@ -12,10 +12,10 @@ import openai
 from flask_login import login_required, current_user
 from .models import User, Note, AiHistory, db
 import json
-import requests
+import asyncio
 
-openai.organization = "org-MB9HPIF9vvXS6JqcEosUqMxM"
-openai.api_key = "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"
+# openai.organization = "org-MB9HPIF9vvXS6JqcEosUqMxM"
+openai.api_key = "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"
 views = Blueprint("views", __name__)
 
 
@@ -72,14 +72,14 @@ def get_chatmodel_request(content):
 
         print(content)
         g.output = completion.choices[0]['message']['content']
-        g.output_status = 'success'
+        g.output_success = True
 
         print(g.output.encode('unicode_escape').decode())
 
     except Exception as ex:
-
-        g.output_status = 'warning'
-        g.output = ex
+        # print('EXCEPTION HERE')
+        g.output_success = False
+        g.output = str(ex)
 
 
 @views.route("/assistante", methods=("GET", "POST"))
@@ -94,7 +94,8 @@ def assistance():
 
             ai_req_resp = AiHistory(
                 ask=request.form.get("ai_request"),
-                text=g.output,
+                output=g.output,
+                output_success=g.output_success,
                 user_id=current_user.id,
             )
             db.session.add(ai_req_resp)

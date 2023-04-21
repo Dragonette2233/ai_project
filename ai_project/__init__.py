@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_login import LoginManager
+from flask_migrate import Migrate
 
 DB_NAME = "database.db"
 
@@ -17,6 +18,7 @@ def create_app():
     from .auth import auth
     from .models import db, User
 
+    migrate = Migrate(app, db)
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/auth')
 

@@ -5,12 +5,12 @@
 <hr>
 <div id="ai_request_response" class="overflow-auto border border-2" style="height: 570px;">
   <ul class="list-group list-group-flush" id="notes" >
-    {% for req in user.chathistory%}
-    <li class="list-group-item list-group-item-secondary border p-3">{{ req.ask }}</li>
-    {% if g.get('output_status') == 'error'%}
-    <li class="list-group-item list-group-item-warning">{{ req.text|replace('\n', '<br>')|safe }}</li>
+    {% for req in user.chathistory %}
+    <li class="list-group-item list-group-item-secondary border p-2">{{ req.ask }}</li>
+    {% if req.output_success == False %}
+    <li class="list-group-item list-group-item-warning">{{ req.output|replace('\n', '<br>')|safe }}</li>
     {% else %}
-    <li class="list-group-item list-group-item-success">{{ req.text|replace('  ', '&nbsp;')|replace('\n', '<br>')|safe }}</li>
+    <li class="list-group-item list-group-item-success">{{ req.output|replace('  ', '&nbsp;')|replace('\n', '<br>')|safe }}</li>
     {% endif %}{% endfor %}
   </ul>
 </ul></div>

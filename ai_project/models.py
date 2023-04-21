@@ -30,5 +30,6 @@ class AiHistory(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     ask = db.Column(db.String(10000))
-    text = db.Column(db.String(20000))
+    output = db.Column(db.String(20000))
+    output_success = db.Column(db.Boolean)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
