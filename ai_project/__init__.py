@@ -3,19 +3,20 @@ from flask_login import LoginManager
 
 DB_NAME = "database.db"
 
+
 def create_app():
 
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
-        SECRET_KEY = 'dev',
-        SQLALCHEMY_DATABASE_URI = 'sqlite:///{DB_NAME}'.format(DB_NAME=DB_NAME),
-        SQLALCHEMY_TRACK_MODIFICATIONS = False
+        SECRET_KEY='dev',
+        SQLALCHEMY_DATABASE_URI='sqlite:///{DB_NAME}'.format(DB_NAME=DB_NAME),
+        SQLALCHEMY_TRACK_MODIFICATIONS=False
     )
 
     from .views import views
     from .auth import auth
     from .models import db, User
-    
+
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/auth')
 
@@ -33,9 +34,3 @@ def create_app():
         db.create_all()
 
     return app
-
-    
-
-
-
-    

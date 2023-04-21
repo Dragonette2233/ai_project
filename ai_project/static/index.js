@@ -15,3 +15,6 @@ function deleteNote(noteID) {
         window.location.href = "/";
     });
 }
+
+var element = document.getElementById("ai_request_response");
+element.scrollTop = element.scrollHeight;
