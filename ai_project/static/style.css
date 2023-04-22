@@ -1,0 +1,36 @@
+body {
+    background-image: url("background.jpg");
+    background-size: auto;
+}
+
+h1 {
+    color: rgb(182, 206, 118);
+    font-weight: bold;
+}
+
+li {
+    word-wrap: break-word;
+}
+
+.navbar-nav {
+
+    position: relative;
+
+}
+
+.container {
+    max-width: 1400px; 
+    margin: 0 auto;
+}
+
+.dropdown-toggle {
+
+    width: 155px;
+
+}
+
+#ai_request_response {
+
+    height: 570px;
+
+}

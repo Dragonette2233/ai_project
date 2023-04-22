@@ -50,7 +50,8 @@ def sign_up():
         cyrillic_check = check_for_cyrillic(userinfo)
 
         if cyrillic_check is not False:
-            flash(get_flash_message_for_cyrillic(cyrillic_check), category="error")
+            flash(get_flash_message_for_cyrillic(
+                cyrillic_check), category="error")
 
         elif len(userinfo.pass_main) < 8:
             flash("Password should be more than 8 chars.", category="error")
@@ -59,7 +60,6 @@ def sign_up():
             flash("Passwords dont match.", category="error")
 
         else:
-            # print(user)
             try:
                 user = User(
                     login=userinfo.login,
@@ -81,15 +81,13 @@ def sign_up():
                     "User with this username of email already exists.", category="error"
                 )
 
-            # return redirect(url_for('hello'))
-
     return render_template("./auth/sign_up.html", user=current_user)
 
 
 @auth.route("/logout")
 @login_required
 def log_out():
-    # session.clear()
+    session.clear()
     logout_user()
     return redirect(url_for("auth.sign_in"))
 

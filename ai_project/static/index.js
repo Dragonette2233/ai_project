@@ -1,4 +1,11 @@
-// Используем setTimeout для того, чтобы скрыть flash сообщение через 5 секунд
+
+var element = document.getElementById("ai_request_response");
+
+if (element != null) {
+
+  element.scrollTop = element.scrollHeight;
+
+}
 
 setTimeout(function(){
     var alerts = document.querySelectorAll('.alert');
@@ -16,5 +23,4 @@ function deleteNote(noteID) {
     });
 }
 
-var element = document.getElementById("ai_request_response");
-element.scrollTop = element.scrollHeight;
+

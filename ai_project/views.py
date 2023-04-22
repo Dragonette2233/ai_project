@@ -7,15 +7,16 @@ from flask import (
     redirect,
     url_for,
     g,
+    session
 )
 import openai
 from flask_login import login_required, current_user
 from .models import User, Note, AiHistory, db
 import json
-import asyncio
 
-# openai.organization = "org-MB9HPIF9vvXS6JqcEosUqMxM"
-openai.api_key = "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"
+
+openai.organization = "org-MB9HPIF9vvXS6JqcEosUqMxM"
+openai.api_key = "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"
 views = Blueprint("views", __name__)
 
 
@@ -59,11 +60,11 @@ def support():
     return render_template("support.html", user=current_user)
 
 
-def get_chatmodel_request(content):
+async def get_chatmodel_request(content):
 
     try:
 
-        completion = openai.ChatCompletion.create(
+        completion = await openai.ChatCompletion.acreate(
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "user", "content": content}
@@ -77,20 +78,28 @@ def get_chatmodel_request(content):
         print(g.output.encode('unicode_escape').decode())
 
     except Exception as ex:
-        # print('EXCEPTION HERE')
         g.output_success = False
         g.output = str(ex)
 
 
+@views.route('/assistante/delete-history/')
+@login_required
+def delete_history():
+
+    AiHistory.query.filter_by(user_id=current_user.id).delete()
+    db.session.commit()
+
+    return redirect(url_for('views.assistance'))
+
+
 @views.route("/assistante", methods=("GET", "POST"))
 @login_required
-def assistance():
+async def assistance():
     if request.method == "POST":
-        # AiHistory.query.filter_by(user_id=current_user.id).delete()
-        # db.session.commit()
+
         request_for_ask = request.form["ai_request"]
-        if request_for_ask != "" and len(request_for_ask) > 3:
-            get_chatmodel_request(content=request_for_ask)
+        if request_for_ask != "" and len(request_for_ask) > 2:
+            await get_chatmodel_request(content=request_for_ask)
 
             ai_req_resp = AiHistory(
                 ask=request.form.get("ai_request"),
@@ -101,17 +110,13 @@ def assistance():
             db.session.add(ai_req_resp)
             db.session.commit()
 
-            # request.form.clear()
+        elif request_for_ask == 'se':
 
-        elif request_for_ask == "de":
-            AiHistory.query.filter_by(user_id=current_user.id).delete()
-            db.session.commit()
+            # session['KEY'] = 123
+            print(session)
 
         else:
-            flash('Too short request for AI. User more than 3 characters',
+            flash('Too short request for AI. User more than 2 characters',
                   category='error')
-
-        # print(current_user.chathistory)
-        # print(request.form["ai_request"])
 
     return render_template("ai_assist.html", user=current_user)
