@@ -16,7 +16,7 @@ import json
 
 
 openai.organization = "org-MB9HPIF9vvXS6JqcEosUqMxM"
-openai.api_key = "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"
+openai.api_key = None
 views = Blueprint("views", __name__)
 
 
