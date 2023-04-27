@@ -114,3 +114,4 @@ flask_run.sh
 flask_run_public.sh
 test.py
 migrations/
+key.txt

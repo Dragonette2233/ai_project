@@ -9,6 +9,7 @@ from flask import (
     g,
     session
 )
+import os
 import openai
 from flask_login import login_required, current_user
 from .models import User, Note, AiHistory, ImgHistory, db
@@ -86,8 +87,9 @@ async def get_imgmodel_request(content):
 
 async def get_chatmodel_request(content):
 
+    # print(os.system('pwd'))
     openai.organization = "org-MB9HPIF9vvXS6JqcEosUqMxM"
-    openai.api_key = "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"
+    openai.api_key = open('./key.txt', 'r').read()
 
     try:
 
