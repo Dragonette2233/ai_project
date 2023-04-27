@@ -21,10 +21,11 @@ auth = Blueprint("auth", __name__)
 
 @auth.route("/")
 def auth_home():
+    print((current_user.imghistory).reverse())
     return {"Cookies": session, "AuthStatus": current_user.is_authenticated}
 
 
-@auth.route("/signin", methods=("GET", "POST"))
+@ auth.route("/signin", methods=("GET", "POST"))
 def sign_in():
     if request.method == "POST":
         email = request.form.get("email")
@@ -43,7 +44,7 @@ def sign_in():
     return render_template("./auth/sign_in.html", user=current_user)
 
 
-@auth.route("/signup", methods=("GET", "POST"))
+@ auth.route("/signup", methods=("GET", "POST"))
 def sign_up():
     if request.method == "POST":
         userinfo = UserInfo(**request.form)
@@ -74,7 +75,7 @@ def sign_up():
                 login_user(user, remember=True)
                 flash("Success. Welcome", category="success")
 
-                redirect(url_for("views.home"))
+                return redirect(url_for("views.home"))
 
             except IntegrityError:
                 flash(
@@ -92,7 +93,7 @@ def log_out():
     return redirect(url_for("auth.sign_in"))
 
 
-"""@auth.before_app_request 
+"""@auth.before_app_request
 def load_logged_in_user():
     user_id = session.get('user_id')
 

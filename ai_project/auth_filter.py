@@ -10,6 +10,11 @@ class UserInfo:
     pass_confirm: str
 
 
+def check_for_cyrillic_string(string: str):
+
+    return True if re.search("[а-яА-Я]", string) else False
+
+
 def check_for_cyrillic(user: UserInfo):
     cyrillic_fileds = {}
 

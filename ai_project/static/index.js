@@ -7,12 +7,15 @@ if (element != null) {
 
 }
 
-setTimeout(function(){
+setTimeout(
+  function(){
     var alerts = document.querySelectorAll('.alert');
-    alerts.forEach(function(alert){
+    alerts.forEach(
+      function(alert){
       alert.style.display = 'none';
     });
-  }, 5000);
+  }, 
+  5000);
 
 function deleteNote(noteID) {
     fetch('/delete-note', {

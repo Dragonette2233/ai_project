@@ -1,11 +1,11 @@
 {% extends 'base.html' %} {% block title %}{{ value }}{% endblock %}
 {% block content %}
 <hr>
-<h1 align="center">AI Assistante</h1>
+<h1 id="head_heart" align="center">AI Assistante</h1>
 <hr>
 <div onload="scrollDown()" id="ai_request_response" class="overflow-auto border border-3">
   <ul class="list-group list-group-flush" id="notes" >
-    {% for req in user.chathistory %}
+    {% for req in current_user.chathistory %}
     <li class="list-group-item list-group-item-light border p-3">{{ req.ask }}</li>
     {% if req.output_success == False %}
     <li class="list-group-item list-group-item-danger border p-2">{{ req.output|replace('\n', '<br>')|safe }}</li>
