@@ -1,0 +1,54 @@
+body {
+    background-image: url("background.jpg");
+    background-size: auto;
+}
+
+h1, h2, h3, label {
+    color: rgb(182, 206, 118);
+    font-weight: bold;
+}
+
+li {
+    word-wrap: break-word;
+}
+
+.faqp {
+    color: rgb(250, 250, 249);
+    font-weight: bold;
+}
+
+.faqs {
+    color: rgb(182, 206, 118);
+    font-size: 20px;
+    font-weight: bolder;
+}
+
+.navbar-nav {
+
+    position: relative;
+
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.dropdown-toggle {
+
+    width: 155px;
+
+}
+
+.footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 20px;
+  }
+  
+#ai_request_response {
+
+    height: 570px;
+
+}

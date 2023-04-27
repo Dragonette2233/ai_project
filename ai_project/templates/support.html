@@ -1,5 +1,22 @@
 {% extends 'base.html' %} {% block title %}{{ value }}{% endblock %}
 {% block content %}
-<h1 align="center">Support page</h1>
-
+<hr>
+<h1 align="center">FAQ</h1>
+<hr>
+<div class="paragraph">
+    <ul>
+        <li><span class="faqs">AI Assistance</span></li>
+        <p class="faqp">
+            AI Assistance - это языковая модель на базе искусственного интеллекта, разработанная OpenAI. 
+            Ответчает на любой вопрос на основе своих данных, которым была обученна. На основе описания может генерировать программный код,
+            написать статью, решить задачу, но не выпить пива вместе с вами.
+        </p>
+        <li><span class="faqs">IMG Generator</span></li>
+        <p class="faqp">
+            В блоке IMG Generator находится нейронная сеть OpenAI способная генерировать высококачественные изображения, 
+            исходя из текстовых описаний на английском языке. Так же можно давать описание на русском, но текст будет автоматически
+            переводится на английский.
+        </p>
+    </ul>
+</div>
 {% endblock %}
