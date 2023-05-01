@@ -64,8 +64,8 @@ def support():
 async def get_imgmodel_request(content):
 
     openai.organization = "org-MB9HPIF9vvXS6JqcEosUqMxM"
-    openai.api_key = "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"
-
+    openai.api_key = os.getenv('OPEN_AI_KEY')
+    
     if check_for_cyrillic_string(content):
         content = translate(content)
 
@@ -172,7 +172,7 @@ async def image_gen():
         g.img_answer = await get_imgmodel_request(content=img_discription)
 
         if g.img_success is False:
-            flash(g.img_output)
+            flash(g.img_output, category='error')
 
         else:
 
