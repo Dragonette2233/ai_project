@@ -25,7 +25,7 @@ def auth_home():
     return {"Cookies": session, "AuthStatus": current_user.is_authenticated}
 
 
-@ auth.route("/signin", methods=("GET", "POST"))
+@auth.route("/signin", methods=("GET", "POST"))
 def sign_in():
     if request.method == "POST":
         email = request.form.get("email")
