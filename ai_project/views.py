@@ -17,9 +17,7 @@ from mtranslate import translate
 from .auth_filter import check_for_cyrillic_string
 import json
 
-
 views = Blueprint("views", __name__)
-
 
 @views.route("/", methods=("POST", "GET"))
 @login_required
@@ -64,7 +62,7 @@ def support():
 async def get_imgmodel_request(content):
 
     openai.organization = "org-MB9HPIF9vvXS6JqcEosUqMxM"
-    openai.api_key = os.getenv('OPEN_AI_KEY')
+    openai.api_key = current_user.openai_api
     
     if check_for_cyrillic_string(content):
         content = translate(content)
@@ -89,7 +87,7 @@ async def get_chatmodel_request(content):
 
     # print(os.system('pwd'))
     openai.organization = "org-MB9HPIF9vvXS6JqcEosUqMxM"
-    openai.api_key = open('./key.txt', 'r').read()
+    openai.api_key = current_user.openai_api
 
     try:
 
@@ -204,3 +202,25 @@ def dbg_route():
         print('0')
 
     return jsonify({})
+
+@views.route('/account-settings', methods=('GET', 'POST'))
+def account():
+
+    if request.method == 'POST':
+        api_key = request.form.get('apik')
+        if len(api_key) > 20:
+
+            user = User.query.get(current_user.id)
+            user.openai_api = api_key
+            db.session.commit()
+            flash('API key updated')
+        
+        else:
+            flash('API key should be more than 20 characters')
+
+        new_password = request.form.get('new_password')
+
+        if new_password != '':
+            ...
+
+    return render_template('account.html')
