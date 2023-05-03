@@ -15,11 +15,12 @@ from flask_login import login_required, current_user
 from .models import User, Note, AiHistory, ImgHistory, db
 from mtranslate import translate
 from .auth_filter import check_for_cyrillic_string
+import markupsafe
 import json
 
-views = Blueprint("views", __name__)
+bp = Blueprint("views", __name__)
 
-@views.route("/", methods=("POST", "GET"))
+@bp.route("/", methods=("POST", "GET"))
 @login_required
 def home():
     if request.method == "POST":
@@ -38,7 +39,7 @@ def home():
     return render_template("home.html")
 
 
-@views.post("/delete-note")
+@bp.post("/delete-note")
 def delete_note():
     note_data = json.loads(request.data)
     # print(request.data)
@@ -53,7 +54,7 @@ def delete_note():
     return jsonify({})
 
 
-@views.route("/support")
+@bp.route("/support")
 @login_required
 def support():
     return render_template("support.html")
@@ -65,7 +66,10 @@ async def get_imgmodel_request(content):
     openai.api_key = current_user.openai_api
     
     if check_for_cyrillic_string(content):
+        # content = content.replace()
+        # print(content)
         content = translate(content)
+        content = content.replace('puss in boots', 'cat in boots')
 
     try:
 
@@ -109,7 +113,7 @@ async def get_chatmodel_request(content):
         g.chat_success = False
 
 
-@views.route('/assistante/delete-history/<string:model>')
+@bp.route('/assistante/delete-history/<string:model>')
 @login_required
 def delete_history(model):
 
@@ -127,19 +131,20 @@ def delete_history(model):
     return redirect(url_for(f'views.{model}'))
 
 
-@views.route("/assistante", methods=("GET", "POST"))
+@bp.route("/assistante", methods=("GET", "POST"))
 @login_required
 async def assistante():
 
     if request.method == "POST":
+        print(request.form)
 
         request_for_ask = request.form["ai_request"]
         if request_for_ask != "" and len(request_for_ask) > 2:
             g.chat_answer = await get_chatmodel_request(content=request_for_ask)
 
             ai_req_resp = AiHistory(
-                ask=request.form.get("ai_request"),
-                output=g.chat_output,
+                ask=markupsafe.escape(request_for_ask),
+                output=markupsafe.escape(g.chat_output),
                 output_success=g.chat_success,
                 user_id=current_user.id,
             )
@@ -161,7 +166,7 @@ async def assistante():
     return render_template("ai_assist.html")
 
 
-@views.route('/image-gen', methods=('GET', 'POST'))
+@bp.route('/image-gen', methods=('GET', 'POST'))
 async def image_gen():
 
     if request.method == 'POST':
@@ -192,7 +197,7 @@ async def image_gen():
     return render_template('image_gen.html', history=history)
 
 
-@views.route('/dbg')
+@bp.route('/dbg')
 def dbg_route():
 
     history = ImgHistory.query.filter_by(
@@ -203,7 +208,7 @@ def dbg_route():
 
     return jsonify({})
 
-@views.route('/account-settings', methods=('GET', 'POST'))
+@bp.route('/account-settings', methods=('GET', 'POST'))
 def account():
 
     if request.method == 'POST':

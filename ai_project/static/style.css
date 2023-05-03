@@ -3,7 +3,7 @@ body {
     background-size: auto;
 }
 
-h1, h2, h3 {
+h1, h2, h3, label, .form-label {
     color: rgb(182, 206, 118);
     font-weight: bold;
 }
