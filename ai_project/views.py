@@ -151,17 +151,12 @@ async def assistante():
             db.session.add(ai_req_resp)
             db.session.commit()
 
-        elif request_for_ask == 'se':
-
-            # session['KEY'] = 123
-            print(session)
-
         else:
             flash('Too short request for AI. User more than 2 characters',
                   category='error')
             # return jsonify('im here')\
 
-        print('func is work')
+        # print('func is work')
 
     return render_template("ai_assist.html")
 

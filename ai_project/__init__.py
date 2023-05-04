@@ -1,6 +1,8 @@
 from flask import Flask
 from flask_login import LoginManager
 from flask_migrate import Migrate
+from logging.handlers import RotatingFileHandler
+import logging
 import os
 
 
@@ -23,6 +25,20 @@ def create_app():
     from .blog import bp as blog
     from .models import db, User
 
+    # Logging configuration
+
+    app.logger.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+    handler = RotatingFileHandler('logs/app.log', maxBytes=100000, backupCount=5)
+    handler.setLevel(logging.DEBUG)
+    handler.setFormatter(formatter)
+    app.logger.addHandler(handler)
+
+    # Removing consol logs
+    for handler in app.logger.handlers:
+        if isinstance(handler, logging.StreamHandler):
+            app.logger.removeHandler(handler)
+
     migrate = Migrate(app, db)
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/auth')
@@ -40,5 +56,14 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+
+    @app.route('/greet')
+    def index():
+        app.logger.debug('Debug message')
+        app.logger.info('Info message')
+        app.logger.warning('Warning message')
+        app.logger.error('Error message')
+        app.logger.critical('Critical message')
+        return 'Hello, world!'
 
     return app

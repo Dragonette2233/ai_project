@@ -41,31 +41,39 @@ def index():
 
 @bp.route('/dbg123', methods=('GET',))
 def dbg123():
-    print(current_app.config["UPLOAD_FOLDER"])
-    print(current_app.static_folder)
-    print(current_app)
-    return jsonify ({})
+    
+    return jsonify ({
+        'static_folder': current_app.static_folder,
+        'static_url': current_app.static_url_path,
+    })
 
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required
 def create():
-    print(request.form)
+    # print(request.form)
     if request.method == 'POST':
         title = request.form['title']
         body = request.form['body']
         file = request.files['file']
 
-        if any(['jpg' in file.filename, 'png' in file.filename, 'jpeg' in file.filename]): # NT: Security: 0
+        if request.content_length > 2097152:
+
+            flash('Размер фото не должен превышать 2МБ', category='error')
+            return redirect(url_for('blog.create'))
+        
+        if file.filename == '':
+
+            fileroute = None
+
+        elif any(['jpg' in file.filename, 'png' in file.filename, 'jpeg' in file.filename]): # NT: Security: 0
             
             filetype = file.filename.split('.')
             filename = secrets.token_urlsafe(16)
             filepath = os.path.join(current_app.config["UPLOAD_FOLDER"], f"{filename}.{filetype[1]}")
             fileroute = os.path.join(current_app.config["UPLOAD_ROUTE"], f"{filename}.{filetype[1]}")
+            current_app.logger.info(request.content_length)
             file.save(filepath)
         
-        elif file.filename == '':
-
-            fileroute = None
         else:
             flash('Only jpg, png, jpeg allowed', category='error')
             return redirect(url_for('blog.create'))
@@ -83,13 +91,13 @@ def create():
             )
             db.session.add(new_post)
             db.session.commit()
-            print('Done')
+            # print('Done')
             # db.commit()
             return redirect(url_for('blog.index'))
         
     return render_template('blog/create.html')
 
-def get_post(id, check_author=True):
+def get_post(id, check_author=True, is_all=False):
     '''post = get_db().execute(
         'SELECT p.id, title, body, created, author_id, username'
         ' FROM post p JOIN user u ON p.author_id = u.id'
@@ -99,7 +107,7 @@ def get_post(id, check_author=True):
 
     post = Blog.query.filter_by(id=id).first()
 
-    print(post.body)
+    #  print(post.body)
 
     if post is None:
         abort(404, f"Post id {id} doesn't exist.")
@@ -122,7 +130,7 @@ def update(id):
         
         if len(title) <= 5:
 
-            flash('Title must be more than 5 characters')
+            flash('Title must be more than 5 characters', category='error')
         
         else:
             post = Blog.query.get(post.id)
@@ -133,21 +141,26 @@ def update(id):
 
     return render_template('blog/update.html', post=post)
 
-@bp.route('/<int:id>/full-remove')
+@bp.route('/<int:user_id>/full-remove')
 @login_required
-def delete_all(id):
+def delete_all(user_id):
 
-    if id == current_user.id:
+    # posts = get_post(id, is_all=True)
 
-        db = get_db()
+    if user_id == current_user.id:
+ 
+        db.session.query(Blog).filter_by(author_id=current_user.id).delete()
+        db.session.commit()
+        '''db = get_db()
         db.execute(
             'DELETE FROM post WHERE author_id = ?', (g.user['id'], )
         )
-        db.commit()
+        db.commit()'''
 
     else:
-
-        flash('This user not authenticated')
+        
+        # <?>
+        flash('This user not authenticated', category='error')
 
     return redirect(url_for('blog.index'))
 
@@ -163,6 +176,7 @@ def delete(id, all=False):
     db.session.delete(post)
     db.session.commit()
     
+    flash('Пост удален', category='success')
     # db.execute('DELETE FROM post WHERE id = ?', (id,))
     #
     return redirect(url_for('blog.index'))

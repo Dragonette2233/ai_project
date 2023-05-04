@@ -26,4 +26,9 @@ function deleteNote(noteID) {
     });
 }
 
-
+function displaySnipper() {
+    // const requestBtn = document.getElementById("ai_request_button");
+    const spinner = document.querySelector(".spinner-border");
+    spinner.style.display = "inline-block";
+    
+};

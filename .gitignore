@@ -118,3 +118,6 @@ migrations/
 key.txt
 _help_migration.txt
 _readme.txt
+.dockerignore
+dockerfile
+logs/

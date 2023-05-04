@@ -54,9 +54,11 @@
             <li><a class="dropdown-item" href="{{ url_for('views.account') }}">Account</a></li>
             <li><a class="dropdown-item" href="{{ url_for('views.support') }}">FAQ</a></li>
             <li><a class="dropdown-item" href="{{ url_for('views.delete_history', model='assistante') }}" 
-                    onclick="return confirm('Delete all history?')">Clear chat history</a></li>
+                    onclick="return confirm('Delete all chat history?')">Clear chat history</a></li>
             <li><a class="dropdown-item" href="{{ url_for('views.delete_history', model='image_gen') }}" 
-                    onclick="return confirm('Delete all history?')">Clear img history</a></li>
+                    onclick="return confirm('Delete all image history?')">Clear img history</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('blog.delete_all', user_id=current_user.id) }}" 
+                    onclick="return confirm('Delete all blogs?')">Clear all blogs</a></li>
           </ol>
         </div>
         {% endif %}

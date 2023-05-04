@@ -1,4 +1,4 @@
-{% extends 'base.html' %} {% block title %}{{ value }}{% endblock %}
+{% extends 'base.html' %}{% block title %}{{ value }}{% endblock %}
 {% block content %}
 <hr>
 <h1 align="center">FUFO blogs</h1>
@@ -39,11 +39,31 @@
             {% if post.author_id == current_user.id %}
                 <div class="btn-group" role="group" aria-label="Basic outlined example">
                     <a type="button" class="btn btn-outline-primary"
-                            href="{{ url_for('blog.update', id=post.id) }}">Edit</a>
+                       href="{{ url_for('blog.update', id=post.id) }}">Edit</a>
                     <a type="button" class="btn btn-outline-danger"
-                            href="{{ url_for('blog.delete', id=post.id) }}">Delete</a>
+                       href=""
+                       data-bs-toggle="modal" 
+                       data-bs-target="#exampleModal">Delete</a>
                 </div>
             {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Подветрдить удаление</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Удалить пост?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+          <a type="button" class="btn btn-primary"
+             href="{{ url_for('blog.delete', id=post.id) }}">Подтвердить</a>
         </div>
       </div>
     </div>
