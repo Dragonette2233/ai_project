@@ -6,17 +6,14 @@ from flask import (
     flash,
     redirect,
     url_for,
-    g,
-    session,
     abort,
     current_app,
     send_from_directory
 )
 
 from flask_login import login_required, current_user
-from .models import User, Note, AiHistory, ImgHistory, Blog, db
-from mtranslate import translate
-from .auth_filter import check_for_cyrillic_string
+from .models import User, Blog, db
+
 from markupsafe import escape
 import secrets
 import os
@@ -37,7 +34,7 @@ def index():
 
     posts = Blog.query.join(User).order_by(Blog.created.desc()).all()
     for post in posts:
-        print(post.id)
+        print(post.photo)
     # print(posts[0].author.login)
     
     return render_template('blog/index.html', posts=posts)
@@ -139,6 +136,9 @@ def update(id):
     if request.method == 'POST':
         title = request.form['title']
         body = request.form['body']
+        print(request.files)
+        file = request.files['file']
+        
         # photo = None
         
         if len(title) <= 5:
@@ -146,9 +146,19 @@ def update(id):
             flash('Title must be more than 5 characters', category='error')
         
         else:
+            if file.filename != '':
+               
+                filetype = file.filename.split('.')
+                filename = secrets.token_urlsafe(16)
+                filepath = os.path.join(current_app.instance_path, 'post_photos', f"{filename}.{filetype[1]}")
+                file_itself = f"{filename}.{filetype[1]}"
+                file.save(filepath)
+                post.photo = file_itself
+            
             post = Blog.query.get(post.id)
             post.title = title
             post.body = body
+            # post.photo = file_itself
             db.session.commit()
             return redirect(url_for('blog.index'))
 
