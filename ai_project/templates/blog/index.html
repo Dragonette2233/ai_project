@@ -25,11 +25,7 @@
   <div class="card mb-3" style="padding: 1px;">
     <div class="row g-0">
       <div class="col-md-3">
-        {% if post.photo is none %}
-        <img src="{{ url_for('static', filename='json.jpg')}}" class="img-fluid rounded-start" alt="...">
-        {% else %}
-        <img src="{{ post.photo }}" class="img-fluid rounded-start" alt="...">
-        {% endif %}
+        <img src="{{ url_for('blog.get_image', filename=post.photo) }}" class="img-fluid rounded-start" alt="example">
         </div>
         <div class="col-md-8">
         <div class="card-body">

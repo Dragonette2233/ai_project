@@ -53,12 +53,22 @@ def delete_note():
 
     return jsonify({})
 
+@bp.post('/support')
+def feedback():
 
-@bp.route("/support")
+    with open(f'logs/feedback_from_{current_user.login}', 'a+') as feedfile:
+
+        feed_message=f'''Тип:{request.form.get('category')}\nСообщение:{request.form.get('body')}\n\n'''
+        feedfile.write(feed_message)
+    
+    flash('Сообщение отправлено.', category='success')
+    
+    return redirect(url_for('views.support'))
+
+@bp.get("/support")
 @login_required
 def support():
     return render_template("support.html")
-
 
 async def get_imgmodel_request(content):
 

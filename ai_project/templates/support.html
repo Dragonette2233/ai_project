@@ -17,6 +17,25 @@
             исходя из текстовых описаний на английском языке. Так же можно давать описание на русском, но текст будет автоматически
             переводится на английский.
         </p>
-    </ul>
+        <li><span class="faqs">Feedback</span></li>
+        <p class="faqp">Баги, советы, пожелания сюда...</p>
+        <form class="row gy-2 gx-3 align-items-center" method="POST">
+            <div class="mb-3">
+                <label for="body" class="form-label">Содержание</label>
+                <textarea class="form-control" id="body" name="body" rows="5" required></textarea>
+            </div>
+            <div class="col-auto">
+              <label class="visually-hidden" for="autoSizingSelect">Preference</label>
+              <select class="form-select" name="category" id="autoSizingSelect">
+                <option name="empty" selected>Категория...</option>
+                <option value="bug">Баг</option>
+                <option value="update">Можно улучшить/переделать</option>
+              </select>
+            </div>
+            <div class="col-auto">
+              <button type="submit" class="btn btn-primary">Отправить</button>
+            </div>
+        </form>
+    </ul> 
 </div>
 {% endblock %}

@@ -16,8 +16,8 @@ def create_app():
         SECRET_KEY='dev',
         SQLALCHEMY_DATABASE_URI='sqlite:///{DB_NAME}'.format(DB_NAME=DB_NAME),
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
-        UPLOAD_FOLDER = os.path.join(app.static_folder, 'post_photos'),
-        UPLOAD_ROUTE = os.path.join(app.static_url_path, 'post_photos')
+        UPLOAD_FOLDER = os.path.join(app.instance_path, 'post_photos'),
+        UPLOAD_ROUTE = os.path.join(app.instance_path, 'post_photos')
     )
 
     from .views import bp as views

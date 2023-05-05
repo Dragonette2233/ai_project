@@ -9,7 +9,8 @@ from flask import (
     g,
     session,
     abort,
-    current_app
+    current_app,
+    send_from_directory
 )
 
 from flask_login import login_required, current_user
@@ -47,6 +48,14 @@ def dbg123():
         'static_url': current_app.static_url_path,
     })
 
+
+@bp.route('/image/<string:filename>')
+def get_image(filename):
+    # filename = 'example.jpg'
+    post_route = os.path.join(current_app.instance_path, 'post_photos/')
+    # print(post_route)
+    return send_from_directory(post_route, filename)
+
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required
 def create():
@@ -63,14 +72,16 @@ def create():
         
         if file.filename == '':
 
-            fileroute = None
+            file_itself = 'json.jpg'
 
         elif any(['jpg' in file.filename, 'png' in file.filename, 'jpeg' in file.filename]): # NT: Security: 0
             
             filetype = file.filename.split('.')
             filename = secrets.token_urlsafe(16)
-            filepath = os.path.join(current_app.config["UPLOAD_FOLDER"], f"{filename}.{filetype[1]}")
-            fileroute = os.path.join(current_app.config["UPLOAD_ROUTE"], f"{filename}.{filetype[1]}")
+            filepath = os.path.join(current_app.instance_path, 'post_photos', f"{filename}.{filetype[1]}")
+            print(filepath)
+            # fileroute = os.path.join(current_app.config["UPLOAD_ROUTE"], f"{filename}.{filetype[1]}")
+            file_itself = f"{filename}.{filetype[1]}"
             current_app.logger.info(request.content_length)
             file.save(filepath)
         
@@ -80,14 +91,14 @@ def create():
 
         if len(title) <= 5:
 
-            flash('Title must be more than 5 characters')
+            flash('Title must be more than 5 characters', category='error')
         
         else:
             new_post = Blog(
                 title=escape(title),
                 body=escape(body),
                 author_id=current_user.id,
-                photo=fileroute
+                photo=file_itself
             )
             db.session.add(new_post)
             db.session.commit()
@@ -169,9 +180,9 @@ def delete_all(user_id):
 def delete(id, all=False):
     post = get_post(id)
 
-    if post.photo is not None:
-        post_filename = post.photo.split('/static/post_photos/')[1]
-        os.system(f'rm {current_app.config["UPLOAD_FOLDER"]}/{post_filename}')
+    if post.photo != 'json.jpg':
+        post_filename = os.path.join(current_app.instance_path, 'post_photos', post.photo)
+        os.system(f'rm {post_filename}')
 
     db.session.delete(post)
     db.session.commit()
