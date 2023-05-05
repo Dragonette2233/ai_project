@@ -21,6 +21,26 @@ import json
 import sys
 
 
+def get_post(id, check_author=True, is_all=False):
+    '''post = get_db().execute(
+        'SELECT p.id, title, body, created, author_id, username'
+        ' FROM post p JOIN user u ON p.author_id = u.id'
+        ' WHERE p.id = ?',
+        (id,)
+    ).fetchone()'''
+
+    post = Blog.query.filter_by(id=id).first()
+
+    #  print(post.body)
+
+    if post is None:
+        abort(404, f"Post id {id} doesn't exist.")
+
+    if check_author and post.author_id != current_user.id:
+        abort(403)
+    
+    return post
+
 bp = Blueprint("blog", __name__)
 
 @bp.route('/', methods=('GET', 'POST'))
@@ -33,9 +53,6 @@ def index():
     ).fetchall()'''
 
     posts = Blog.query.join(User).order_by(Blog.created.desc()).all()
-    for post in posts:
-        print(post.photo)
-    # print(posts[0].author.login)
     
     return render_template('blog/index.html', posts=posts)
 
@@ -50,15 +67,16 @@ def dbg123():
 
 @bp.route('/image/<string:filename>')
 def get_image(filename):
-    # filename = 'example.jpg'
+    
     post_route = os.path.join(current_app.instance_path, 'post_photos/')
-    # print(post_route)
+    
     return send_from_directory(post_route, filename)
 
-@bp.route('/create', methods=('GET', 'POST'))
+
+@bp.route('/create', '/<int:id>/update', methods=('GET', 'POST'))
 @login_required
 def create():
-    # print(request.form)
+    
     if request.method == 'POST':
         title = request.form['title']
         body = request.form['body']
@@ -78,7 +96,7 @@ def create():
             filetype = file.filename.split('.')
             filename = secrets.token_urlsafe(16)
             filepath = os.path.join(current_app.instance_path, 'post_photos', f"{filename}.{filetype[1]}")
-            print(filepath)
+            # print(filepath)
             # fileroute = os.path.join(current_app.config["UPLOAD_ROUTE"], f"{filename}.{filetype[1]}")
             file_itself = f"{filename}.{filetype[1]}"
             # current_app.logger.info(request.content_length)
@@ -105,27 +123,7 @@ def create():
             # db.commit()
             return redirect(url_for('blog.index'))
         
-    return render_template('blog/create.html')
-
-def get_post(id, check_author=True, is_all=False):
-    '''post = get_db().execute(
-        'SELECT p.id, title, body, created, author_id, username'
-        ' FROM post p JOIN user u ON p.author_id = u.id'
-        ' WHERE p.id = ?',
-        (id,)
-    ).fetchone()'''
-
-    post = Blog.query.filter_by(id=id).first()
-
-    #  print(post.body)
-
-    if post is None:
-        abort(404, f"Post id {id} doesn't exist.")
-
-    if check_author and post.author_id != current_user.id:
-        abort(403)
-    
-    return post
+    return render_template('blog/create.html', post=None, state='create')
 
 @bp.route('/<int:id>/update', methods=('GET', 'POST'))
 @login_required
@@ -162,7 +160,7 @@ def update(id):
             db.session.commit()
             return redirect(url_for('blog.index'))
 
-    return render_template('blog/update.html', post=post)
+    return render_template('blog/create.html', post=post, state='update')
 
 @bp.route('/<int:user_id>/full-remove')
 @login_required

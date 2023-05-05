@@ -6,13 +6,21 @@
 
 {% block content %}
 <hr>
-<h1 align="center">FUFO blogs</h1>
+  {% if state == 'create'%}
+  <h1 align="center">Создать пост</h1>
+  {% else %}
+  <h1 align="center">Обновить пост</h1>
+  {% endif %}
 <hr>
 <div class="border border-light" style="padding: 15px;">
   <form method="POST" enctype="multipart/form-data">
     <div class="mb-3">
       <label for="title" class="form-label">Заголовок</label>
+      {% if post %}
+      <input name="title" class="form-control" id="title" value="{{ post.title }}" required>
+      {% else %}
       <input name="title" class="form-control" id="title" value="{{ request.form['title'] }}" required>
+      {% endif %}
     </div>
     <div class="mb-3">
       <label for="formFile" class="form-label">Фото</label>
@@ -22,6 +30,8 @@
       <label for="body" class="form-label">Содержание</label>
       {% if request.form.get('body') is not none %}
       <textarea class="form-control" id="body" name="body" rows="10"required>{{ request.form.get('body') }}</textarea>
+      {% elif post %}
+      <textarea class="form-control" id="body" name="body" rows="10"required>{{ post.body }}</textarea>
       {% else %}
       <textarea class="form-control" id="body" name="body" rows="10"required></textarea>
       {% endif %}
