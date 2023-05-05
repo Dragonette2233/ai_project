@@ -36,6 +36,8 @@ def index():
     ).fetchall()'''
 
     posts = Blog.query.join(User).order_by(Blog.created.desc()).all()
+    for post in posts:
+        print(post.id)
     # print(posts[0].author.login)
     
     return render_template('blog/index.html', posts=posts)
@@ -82,7 +84,7 @@ def create():
             print(filepath)
             # fileroute = os.path.join(current_app.config["UPLOAD_ROUTE"], f"{filename}.{filetype[1]}")
             file_itself = f"{filename}.{filetype[1]}"
-            current_app.logger.info(request.content_length)
+            # current_app.logger.info(request.content_length)
             file.save(filepath)
         
         else:
