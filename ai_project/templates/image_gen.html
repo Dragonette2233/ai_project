@@ -1,16 +1,22 @@
 {% extends 'base.html' %} {% block title %}{{ value }}{% endblock %}
 {% block content %}
 <hr>
-<h1 id="head_heart" align="center">Image Generator</h1>
+<h1 id="head_heart" align="center">
+  Image Generator
+  <span>
+    <div class="spinner-border ms-auto" role="status" aria-hidden="true" style="display: none;"></div>
+  </span>
+</h1>
 <hr>
 <div>
   <form method="POST" id="img_form">
-    <div>
-      <textarea name="img_request" id="img_request" cols="5" rows="1" class="form-control" placeholder="Discription" title="'HES"></textarea>
+    <div class="form-floating">
+      <textarea name="img_request" id="img_request" class="form-control" placeholder="Leave a comment here"></textarea>
+      <label for="img_request">Введите описание изображение на английском или русском</label>
     </div>
     <br>
-    <div align="center">
-      <button type="submit" class="btn btn-primary" id="ai_request_button">
+    <div class="text-center">
+      <button type="submit" class="btn btn-primary" id="ai_request_button" onclick="displaySnipper()">
         Generate request
       </button>
     </div>

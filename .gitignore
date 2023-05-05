@@ -112,6 +112,12 @@ dmypy.json
 _other/
 flask_run.sh
 flask_run_public.sh
+flask_make_migration.sh
 test.py
 migrations/
 key.txt
+_help_migration.txt
+_readme.txt
+.dockerignore
+dockerfile
+logs/

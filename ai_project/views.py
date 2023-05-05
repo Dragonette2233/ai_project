@@ -15,13 +15,12 @@ from flask_login import login_required, current_user
 from .models import User, Note, AiHistory, ImgHistory, db
 from mtranslate import translate
 from .auth_filter import check_for_cyrillic_string
+import markupsafe
 import json
 
+bp = Blueprint("views", __name__)
 
-views = Blueprint("views", __name__)
-
-
-@views.route("/", methods=("POST", "GET"))
+@bp.route("/", methods=("POST", "GET"))
 @login_required
 def home():
     if request.method == "POST":
@@ -40,7 +39,7 @@ def home():
     return render_template("home.html")
 
 
-@views.post("/delete-note")
+@bp.post("/delete-note")
 def delete_note():
     note_data = json.loads(request.data)
     # print(request.data)
@@ -54,20 +53,33 @@ def delete_note():
 
     return jsonify({})
 
+@bp.post('/support')
+def feedback():
 
-@views.route("/support")
+    with open(f'logs/feedback_from_{current_user.login}', 'a+') as feedfile:
+
+        feed_message=f'''Тип:{request.form.get('category')}\nСообщение:{request.form.get('body')}\n\n'''
+        feedfile.write(feed_message)
+    
+    flash('Сообщение отправлено.', category='success')
+    
+    return redirect(url_for('views.support'))
+
+@bp.get("/support")
 @login_required
 def support():
     return render_template("support.html")
 
-
 async def get_imgmodel_request(content):
 
     openai.organization = "org-MB9HPIF9vvXS6JqcEosUqMxM"
-    openai.api_key = os.getenv('OPEN_AI_KEY')
+    openai.api_key = current_user.openai_api
     
     if check_for_cyrillic_string(content):
+        # content = content.replace()
+        # print(content)
         content = translate(content)
+        content = content.replace('puss in boots', 'cat in boots')
 
     try:
 
@@ -89,7 +101,7 @@ async def get_chatmodel_request(content):
 
     # print(os.system('pwd'))
     openai.organization = "org-MB9HPIF9vvXS6JqcEosUqMxM"
-    openai.api_key = open('./key.txt', 'r').read()
+    openai.api_key = current_user.openai_api
 
     try:
 
@@ -111,7 +123,7 @@ async def get_chatmodel_request(content):
         g.chat_success = False
 
 
-@views.route('/assistante/delete-history/<string:model>')
+@bp.route('/assistante/delete-history/<string:model>')
 @login_required
 def delete_history(model):
 
@@ -129,41 +141,39 @@ def delete_history(model):
     return redirect(url_for(f'views.{model}'))
 
 
-@views.route("/assistante", methods=("GET", "POST"))
+@bp.route("/assistante", methods=("GET", "POST"))
 @login_required
 async def assistante():
 
     if request.method == "POST":
+        print(request.form)
 
         request_for_ask = request.form["ai_request"]
         if request_for_ask != "" and len(request_for_ask) > 2:
             g.chat_answer = await get_chatmodel_request(content=request_for_ask)
 
             ai_req_resp = AiHistory(
-                ask=request.form.get("ai_request"),
-                output=g.chat_output,
+                ask=markupsafe.escape(request_for_ask),
+                output=markupsafe.escape(g.chat_output),
                 output_success=g.chat_success,
                 user_id=current_user.id,
             )
             db.session.add(ai_req_resp)
             db.session.commit()
-
-        elif request_for_ask == 'se':
-
-            # session['KEY'] = 123
-            print(session)
+            return redirect(url_for('views.assistante'))
+            # request.form.clear()
 
         else:
             flash('Too short request for AI. User more than 2 characters',
                   category='error')
             # return jsonify('im here')\
 
-        print('func is work')
+        # print('func is work')
 
     return render_template("ai_assist.html")
 
 
-@views.route('/image-gen', methods=('GET', 'POST'))
+@bp.route('/image-gen', methods=('GET', 'POST'))
 async def image_gen():
 
     if request.method == 'POST':
@@ -194,7 +204,7 @@ async def image_gen():
     return render_template('image_gen.html', history=history)
 
 
-@views.route('/dbg')
+@bp.route('/dbg')
 def dbg_route():
 
     history = ImgHistory.query.filter_by(
@@ -204,3 +214,25 @@ def dbg_route():
         print('0')
 
     return jsonify({})
+
+@bp.route('/account-settings', methods=('GET', 'POST'))
+def account():
+
+    if request.method == 'POST':
+        api_key = request.form.get('apik')
+        if len(api_key) > 20:
+
+            user = User.query.get(current_user.id)
+            user.openai_api = api_key
+            db.session.commit()
+            flash('API key updated')
+        
+        else:
+            flash('API key should be more than 20 characters')
+
+        new_password = request.form.get('new_password')
+
+        if new_password != '':
+            ...
+
+    return render_template('account.html')

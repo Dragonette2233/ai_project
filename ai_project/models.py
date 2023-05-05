@@ -12,9 +12,11 @@ class User(db.Model, UserMixin):
     login = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(150))
+    openai_api = db.Column(db.String(250))
     notes = db.relationship("Note")
     chathistory = db.relationship("AiHistory")
     imghistory = db.relationship("ImgHistory")
+    # blog = db.relationship("Blog")
 
 
 class Note(db.Model):
@@ -25,7 +27,17 @@ class Note(db.Model):
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
 
+class Blog(db.Model):
+    __tablename__ = "blog"
 
+    id = db.Column(db.Integer, primary_key=True)
+    created = db.Column(db.DateTime(timezone=True), default=func.now())
+    title = db.Column(db.String(1000))
+    body = db.Column(db.String(10000))
+    photo = db.Column(db.String(10000), nullable=True)
+    author_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    author = db.relationship('User', backref=db.backref('posts', lazy=True))
+    
 class AiHistory(db.Model):
     __tablename__ = "chathistory"
 

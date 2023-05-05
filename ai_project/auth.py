@@ -16,16 +16,16 @@ from .models import User, db
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
-auth = Blueprint("auth", __name__)
+bp = Blueprint("auth", __name__)
 
 
-@auth.route("/")
+@bp.route("/")
 def auth_home():
     print((current_user.imghistory).reverse())
     return {"Cookies": session, "AuthStatus": current_user.is_authenticated}
 
 
-@auth.route("/signin", methods=("GET", "POST"))
+@bp.route("/signin", methods=("GET", "POST"))
 def sign_in():
     if request.method == "POST":
         email = request.form.get("email")
@@ -44,7 +44,7 @@ def sign_in():
     return render_template("./auth/sign_in.html", user=current_user)
 
 
-@ auth.route("/signup", methods=("GET", "POST"))
+@bp.route("/signup", methods=("GET", "POST"))
 def sign_up():
     if request.method == "POST":
         userinfo = UserInfo(**request.form)
@@ -85,7 +85,7 @@ def sign_up():
     return render_template("./auth/sign_up.html", user=current_user)
 
 
-@auth.route("/logout")
+@bp.route("/logout")
 @login_required
 def log_out():
     session.clear()
