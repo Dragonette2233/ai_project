@@ -150,6 +150,8 @@ async def assistante():
             )
             db.session.add(ai_req_resp)
             db.session.commit()
+            return redirect(url_for('views.assistante'))
+            # request.form.clear()
 
         else:
             flash('Too short request for AI. User more than 2 characters',

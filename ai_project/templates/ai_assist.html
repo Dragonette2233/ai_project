@@ -3,9 +3,9 @@
 <hr>
 <div class="text-center" >
   <h1>AI Assistante
-    <span>
+    <!-- <span>
       <div class="spinner-border ms-auto" role="status" aria-hidden="true" style="display: none;"></div>
-    </span>
+    </span> -->
   </h1> 
 </div>
 <!-- <h1 id="head_heart" align="center">AI Assistante</h1> -->
@@ -30,7 +30,9 @@
     </div>
     <br>
     <div class="text-center">
-      <button type="submit" class="btn btn-primary" id="ai_request_button" onclick="displaySnipper()">
+      <button type="submit" class="btn btn-primary btn-lg" id="ai_request_button" onclick="displaySnipper()">
+        <span class="spinner-border spinner-border-sm" id="ai_request_spinner" role="status" aria-hidden="true"
+              style="display: none;"></span>
         Generate request
       </button>
     </div>
