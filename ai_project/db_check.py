@@ -8,8 +8,8 @@ cur = conn.cursor()
 
 # выполнение запроса и получение всех строк
 
-cur.execute("SELECT * FROM notes")
-row = cur.fetchall()
+cur.execute("SELECT * FROM chathistory")
+row = cur.fetchone()
 
 # вывод всех строк
 

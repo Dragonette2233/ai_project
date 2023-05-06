@@ -17,9 +17,9 @@
     <div class="mb-3">
       <label for="title" class="form-label">Заголовок</label>
       {% if post %}
-      <input name="title" class="form-control" id="title" value="{{ post.title }}" required>
+      <input name="title" class="form-control" id="title" value="{{ post.title }}" required minlength="3">
       {% else %}
-      <input name="title" class="form-control" id="title" value="{{ request.form['title'] }}" required>
+      <input name="title" class="form-control" id="title" value="{{ request.form['title'] }}" required minlength="3">
       {% endif %}
     </div>
     <div class="mb-3">
