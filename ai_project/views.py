@@ -146,7 +146,7 @@ def delete_history(model):
 async def assistante():
 
     if request.method == "POST":
-        print(request.form)
+        # print(request.form)
 
         request_for_ask = request.form["ai_request"]
         if request_for_ask != "" and len(request_for_ask) > 2:
