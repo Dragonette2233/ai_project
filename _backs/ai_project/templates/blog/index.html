@@ -1,0 +1,69 @@
+{% extends 'base.html' %}{% block title %}{{ value }}{% endblock %}
+{% block content %}
+<hr>
+<h1 align="center">FUFO blogs</h1>
+<hr>
+<!-- <div>
+    <button type="button" class="btn btn-primary" >Primary</button>
+    <button type="button" class="btn btn-secondary">Secondary</button>
+    <button type="button" class="btn btn-success">Новый пост</button>
+    <button type="button" class="btn btn-danger">Danger</button>
+    <button type="button" class="btn btn-warning">Warning</button>
+    <button type="button" class="btn btn-info">Info</button>
+    <button type="button" class="btn btn-light">Light</button>
+    <button type="button" class="btn btn-dark">Dark</button>
+    <button type="button" class="btn btn-link">Link</button>
+</div> -->
+<div class="d-grid gap-2 col-6 mx-auto">
+    <a class="btn btn-primary" 
+            type="button"
+            href="{{ url_for('blog.create_update') }}">NEW POST</a>
+  </div>
+<br>
+{% if posts is not none %}
+{% for post in posts %}
+  <div class="card mb-3" style="padding: 1px;">
+    <div class="row g-0">
+      <div class="col-md-3">
+        <img src="{{ url_for('blog.get_image', filename=post.photo) }}" class="img-fluid rounded-start" alt="example">
+        </div>
+        <div class="col-md-8">
+        <div class="card-body">
+            <h5 class="card-title">{{ post.title }}</h5>
+            <p class="card-text">{{ post.body }}</p>
+            <p class="card-text"><small class="text-muted">from {{ post.author.login }} | {{ post.created }}</small></p>
+            {% if post.author_id == current_user.id %}
+                <div class="btn-group" role="group" aria-label="Basic outlined example">
+                    <a type="button" class="btn btn-outline-primary"
+                       href="{{ url_for('blog.create_update', id=post.id) }}">Edit</a>
+                    <a type="button" class="btn btn-outline-danger"
+                       href=""
+                       data-bs-toggle="modal" 
+                       data-bs-target="#modalWindow{{ post.id }}">Delete</a>
+                </div>
+            {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="modalWindow{{ post.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Подветрдить удаление</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Удалить пост?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+          <a type="button" class="btn btn-primary"
+             href="{{ url_for('blog.delete', id=post.id) }}">Подтвердить {{ post.id }}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+{% endif %}
+{% endblock %}
