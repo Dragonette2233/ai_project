@@ -9,13 +9,13 @@ if (element != null) {
 
 setTimeout(
   function(){
-    var alerts = document.querySelectorAll('.alert');
-    alerts.forEach(
-      function(alert){
-      alert.style.display = 'none';
+    var alerts_btn = document.querySelectorAll('.btn-close');
+    alerts_btn.forEach(
+      function(button){
+      button.click();
     });
   }, 
-  5000);
+  4500);
 
 function deleteNote(noteID) {
     fetch('/delete-note', {

@@ -1,8 +1,14 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, FileField
+from wtforms import StringField, TextAreaField, FileField, EmailField, PasswordField
 from wtforms.validators import DataRequired, Length, ValidationError
 from werkzeug.utils import secure_filename
 import secrets
+
+class UserForm(FlaskForm):
+    email = EmailField('Email', validators=[DataRequired()])
+    login = StringField('Login', validators=[DataRequired(), Length(min=4, max=20)])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=4, max=32)])
+    c_password = PasswordField('c_Password', validators=[DataRequired(), Length(min=4, max=32)])
 
 class BlogPostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired(), Length(min=2, max=50)])

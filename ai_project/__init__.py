@@ -13,7 +13,7 @@ def create_app():
 
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
-        SECRET_KEY='dev',
+        SECRET_KEY=os.getenv('NOK'),
         SQLALCHEMY_DATABASE_URI='sqlite:///{DB_NAME}'.format(DB_NAME=DB_NAME),
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         UPLOAD_FOLDER = os.path.join(app.instance_path, 'post_photos'),
