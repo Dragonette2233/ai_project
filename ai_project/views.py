@@ -1,3 +1,11 @@
+import os
+import openai
+import markupsafe
+import json
+from .openai_cstmapi import (
+    get_imgmodel_request,
+    get_chatmodel_request
+)
 from flask import (
     Blueprint,
     render_template,
@@ -7,16 +15,13 @@ from flask import (
     redirect,
     url_for,
     g,
-    session
+    current_app
 )
-import os
-import openai
+
 from flask_login import login_required, current_user
 from .models import User, Note, AiHistory, ImgHistory, db
 from mtranslate import translate
 from .auth_filter import check_for_cyrillic_string
-import markupsafe
-import json
 
 bp = Blueprint("views", __name__)
 
@@ -70,58 +75,6 @@ def feedback():
 def support():
     return render_template("support.html")
 
-async def get_imgmodel_request(content):
-
-    openai.organization = "org-MB9HPIF9vvXS6JqcEosUqMxM"
-    openai.api_key = current_user.openai_api
-    
-    if check_for_cyrillic_string(content):
-        # content = content.replace()
-        # print(content)
-        content = translate(content)
-        content = content.replace('puss in boots', 'cat in boots')
-
-    try:
-
-        completion = await openai.Image.acreate(
-            prompt=content,
-            n=3,
-            size="1024x1024"
-        )
-
-        g.img_output = completion['data']
-        g.img_success = True
-
-    except Exception as ex:
-        g.img_output = str(ex)
-        g.img_success = False
-
-
-async def get_chatmodel_request(content):
-
-    # print(os.system('pwd'))
-    openai.organization = "org-MB9HPIF9vvXS6JqcEosUqMxM"
-    openai.api_key = current_user.openai_api
-
-    try:
-
-        completion = await openai.ChatCompletion.acreate(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "user", "content": content}
-            ]
-        )
-
-        # print(content)
-        g.chat_output = completion.choices[0]['message']['content']
-        g.chat_success = True
-
-        # print(g.chat_output.encode('unicode_escape').decode())
-
-    except Exception as ex:
-        g.chat_output = str(ex)
-        g.chat_success = False
-
 
 @bp.route('/assistante/delete-history/<string:model>')
 @login_required
@@ -146,8 +99,8 @@ def delete_history(model):
 async def assistante():
 
     if request.method == "POST":
-        print(request.form)
-
+        # print(request.form)
+        # current_app.logger.info(g.)
         request_for_ask = request.form["ai_request"]
         if request_for_ask != "" and len(request_for_ask) > 2:
             g.chat_answer = await get_chatmodel_request(content=request_for_ask)
@@ -166,10 +119,8 @@ async def assistante():
         else:
             flash('Too short request for AI. User more than 2 characters',
                   category='error')
-            # return jsonify('im here')\
-
-        # print('func is work')
-
+            return redirect(url_for('views.assistante'))
+            
     return render_template("ai_assist.html")
 
 
@@ -235,4 +186,4 @@ def account():
         if new_password != '':
             ...
 
-    return render_template('account.html')
+    return render_template('settings.html')

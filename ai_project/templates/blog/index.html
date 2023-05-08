@@ -17,7 +17,7 @@
 <div class="d-grid gap-2 col-6 mx-auto">
     <a class="btn btn-primary" 
             type="button"
-            href="{{ url_for('blog.create') }}">NEW POST</a>
+            href="{{ url_for('blog.create_update') }}">NEW POST</a>
   </div>
 <br>
 {% if posts is not none %}
@@ -35,7 +35,7 @@
             {% if post.author_id == current_user.id %}
                 <div class="btn-group" role="group" aria-label="Basic outlined example">
                     <a type="button" class="btn btn-outline-primary"
-                       href="{{ url_for('blog.update', id=post.id) }}">Edit</a>
+                       href="{{ url_for('blog.create_update', id=post.id) }}">Edit</a>
                     <a type="button" class="btn btn-outline-danger"
                        href=""
                        data-bs-toggle="modal" 

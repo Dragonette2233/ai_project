@@ -27,8 +27,19 @@ function deleteNote(noteID) {
 }
 
 function displaySnipper() {
-    // const requestBtn = document.getElementById("ai_request_button");
-    const spinner = document.getElementById('ai_request_spinner')
-    spinner.style.display = "inline-block";
+
+    const spinner = document.getElementById('ai_request_spinner');
+    const form = document.getElementById('ai_form');
+    const textarea = document.getElementById('ai_request');
+
+    form.addEventListener('submit', function(event) {
+      if (textarea.value.length <= 3) {
+        event.preventDefault(); // отменяем отправку формы
+        
+      }
+      else {
+        spinner.style.display = "inline-block";
+      }
+    });
     
 };

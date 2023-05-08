@@ -17,7 +17,7 @@ def create_app():
         SQLALCHEMY_DATABASE_URI='sqlite:///{DB_NAME}'.format(DB_NAME=DB_NAME),
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         UPLOAD_FOLDER = os.path.join(app.instance_path, 'post_photos'),
-        UPLOAD_ROUTE = os.path.join(app.instance_path, 'post_photos')
+        # UPLOAD_ROUTE = os.path.join(app.instance_path, 'post_photos')
     )
 
     from .views import bp as views
@@ -47,6 +47,8 @@ def create_app():
     db.init_app(app)
     login_manager = LoginManager(app)
     login_manager.login_view = 'auth.sign_in'
+    login_manager.login_message = 'Вам необходимо сначала авторизоваться'
+    # login_manager.
     # login_manager.init_app(app)
 
     @login_manager.user_loader

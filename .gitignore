@@ -121,3 +121,5 @@ _readme.txt
 .dockerignore
 dockerfile
 logs/
+detached_tests/
+_backs/
