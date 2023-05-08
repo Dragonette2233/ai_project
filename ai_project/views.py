@@ -186,4 +186,4 @@ def account():
         if new_password != '':
             ...
 
-    return render_template('account.html')
+    return render_template('settings.html')
