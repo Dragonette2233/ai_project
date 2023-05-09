@@ -9,81 +9,71 @@ from flask import (
     session,
 )
 from flask_login import login_user, login_required, logout_user, current_user
-from ai_project.auth_filter import UserInfo, check_for_cyrillic
-from ai_project.auth_filter import get_flash_message_for_cyrillic
 from sqlalchemy.exc import IntegrityError
+from .ai_forms import AuthUserForm, LoginUserForm
 from .models import User, db
-
 from werkzeug.security import generate_password_hash, check_password_hash
 
 bp = Blueprint("auth", __name__)
 
 
-@bp.route("/")
-def auth_home():
-    print((current_user.imghistory).reverse())
-    return {"Cookies": session, "AuthStatus": current_user.is_authenticated}
-
-
 @bp.route("/signin", methods=("GET", "POST"))
 def sign_in():
-    if request.method == "POST":
-        email = request.form.get("email")
-        password = request.form.get("pass_main")
+
+    form = LoginUserForm()
+
+    if request.method == "POST" and form.validate_on_submit():
+
+        email = form.email.data
+        password = form.password.data
 
         user = User.query.filter_by(email=email).first()
 
         if user and check_password_hash(user.password, password):
-            flash("You are logged in", category="success")
+            flash(f"Вы вошли как {user.login}", category="success")
             login_user(user, remember=True)
             return redirect(url_for("views.home"))
 
         else:
-            flash("Incorrect email or password.", category="error")
+            flash("Пароль или email не совпадают.", category="error")
 
-    return render_template("./auth/sign_in.html", user=current_user)
+    return render_template("./auth/sign_in.html", user=current_user, form=form)
 
 
 @bp.route("/signup", methods=("GET", "POST"))
 def sign_up():
-    if request.method == "POST":
-        userinfo = UserInfo(**request.form)
-        cyrillic_check = check_for_cyrillic(userinfo)
 
-        if cyrillic_check is not False:
-            flash(get_flash_message_for_cyrillic(
-                cyrillic_check), category="error")
+    form = AuthUserForm()
 
-        elif len(userinfo.pass_main) < 8:
-            flash("Password should be more than 8 chars.", category="error")
+    if request.method == 'POST' and form.validate_on_submit():
+        email = form.email.data
+        login = form.login.data
+        password = generate_password_hash(form.password.data)
+        
+        try:
+            user = User(
+                email=email,
+                login=login,
+                password=password,
+            )
 
-        elif userinfo.pass_main != userinfo.pass_confirm:
-            flash("Passwords dont match.", category="error")
+            db.session.add(user)
+            db.session.commit()
 
-        else:
-            try:
-                user = User(
-                    login=userinfo.login,
-                    email=userinfo.email,
-                    password=generate_password_hash(userinfo.pass_confirm),
-                )
+            login_user(user, remember=True)
+            flash("Success. Welcome", category="success")
 
-                db.session.add(user)
-                db.session.commit()
+            return redirect(url_for("views.home"))
 
-                # session['user_id'] =
-                login_user(user, remember=True)
-                flash("Success. Welcome", category="success")
-
-                return redirect(url_for("views.home"))
-
-            except IntegrityError:
-                flash(
-                    "User with this username of email already exists.", category="error"
-                )
-
-    return render_template("./auth/sign_up.html", user=current_user)
-
+        except IntegrityError:
+            flash(
+                "Пользователь с данными именем или email уже существует", category="error"
+            )
+    else:
+        for error in form.errors.values():
+            flash(f"{error[0]}", category='error')
+            
+    return render_template("./auth/sign_up.html", user=current_user, form=form)
 
 @bp.route("/logout")
 @login_required
@@ -91,13 +81,3 @@ def log_out():
     session.clear()
     logout_user()
     return redirect(url_for("auth.sign_in"))
-
-
-"""@auth.before_app_request
-def load_logged_in_user():
-    user_id = session.get('user_id')
-
-    if user_id is None:
-        g.user = None
-    else:
-        g.user = User.query.filter_by(id=user_id).first()"""

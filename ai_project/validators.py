@@ -1,26 +1,11 @@
-from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, FileField, EmailField, PasswordField
-from wtforms.validators import DataRequired, Length, ValidationError
-from werkzeug.utils import secure_filename
+# from werkzeug.utils import secure_filename
+from wtforms.validators import ValidationError
 import secrets
 
-class UserForm(FlaskForm):
-    email = EmailField('Email', validators=[DataRequired()])
-    login = StringField('Login', validators=[DataRequired(), Length(min=4, max=20)])
-    password = PasswordField('Password', validators=[DataRequired(), Length(min=4, max=32)])
-    c_password = PasswordField('c_Password', validators=[DataRequired(), Length(min=4, max=32)])
 
-class BlogPostForm(FlaskForm):
-    title = StringField('Title', validators=[DataRequired(), Length(min=2, max=50)])
-    body = TextAreaField('Body', validators=[DataRequired()])
-    file = FileField('Photo')
-    
-    def validate_file(form, field):
-        if field.data:
-            filename = secure_filename(field.data.filename)
-            if not any([filename.endswith('.jpg'), filename.endswith('.jpeg'), filename.endswith('.png')]):
-                raise ValidationError('Only jpg, jpeg and png files are allowed.')
-            
+def validate_no_cyrillic_chars(form, field):
+    if any([ch for ch in field.data if 'а' <= ch <= 'я' or 'А' <= ch <= 'Я']):
+        raise ValidationError('Пароль не должен содержать кириллицу')    
 
 def validate_file(filename):
     

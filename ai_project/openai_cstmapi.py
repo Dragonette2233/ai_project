@@ -1,17 +1,15 @@
 import openai
 from mtranslate import translate
-from flask import current_app, g
+from flask import g
 from flask_login import current_user
-from .auth_filter import check_for_cyrillic_string
 
 async def get_imgmodel_request(content):
 
     openai.organization = "org-MB9HPIF9vvXS6JqcEosUqMxM"
     openai.api_key = current_user.openai_api
     
-    if check_for_cyrillic_string(content):
-        # content = content.replace()
-        # print(content)
+    if 'кот в сапогах' in content:
+        
         content = translate(content)
         content = content.replace('puss in boots', 'cat in boots')
 

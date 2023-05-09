@@ -1,5 +1,3 @@
-import os
-import openai
 import markupsafe
 import json
 from .openai_cstmapi import (
@@ -15,19 +13,17 @@ from flask import (
     redirect,
     url_for,
     g,
-    current_app
 )
 
 from flask_login import login_required, current_user
 from .models import User, Note, AiHistory, ImgHistory, db
-from mtranslate import translate
-from .auth_filter import check_for_cyrillic_string
 
 bp = Blueprint("views", __name__)
 
 @bp.route("/", methods=("POST", "GET"))
 @login_required
 def home():
+
     if request.method == "POST":
         note = request.form.get("note")
 
@@ -38,16 +34,14 @@ def home():
             new_note = Note(data=note, user_id=current_user.id)
             db.session.add(new_note)
             db.session.commit()
-            # request.form.clear()
-        # return jsonify(request.form)
-
+           
     return render_template("home.html")
 
 
 @bp.post("/delete-note")
 def delete_note():
     note_data = json.loads(request.data)
-    # print(request.data)
+
     noteID = note_data["noteID"]
     note = Note.query.get(noteID)
 
