@@ -5,7 +5,7 @@ import secrets
 
 def validate_no_cyrillic_chars(form, field):
     if any([ch for ch in field.data if 'а' <= ch <= 'я' or 'А' <= ch <= 'Я']):
-        raise ValidationError('Пароль не должен содержать кириллицу')    
+        raise ValidationError('Пароль не должен содержать кириллицу')
 
 def validate_file(filename):
     

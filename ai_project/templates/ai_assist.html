@@ -3,17 +3,13 @@
 <hr>
 <div class="text-center" >
   <h1>AI Assistante
-    <!-- <span>
-      <div class="spinner-border ms-auto" role="status" aria-hidden="true" style="display: none;"></div>
-    </span> -->
   </h1> 
 </div>
-<!-- <h1 id="head_heart" align="center">AI Assistante</h1> -->
 <hr>
 <div onload="scrollDown()" id="ai_request_response" class="overflow-auto border border-3" style="height: 500px;">
-  <ul class="list-group list-group-flush" id="notes" >
+  <ul class="list-group list-group-flush" id="response-list">
     {% for req in current_user.chathistory %}
-    <li class="list-group-item list-group-item-light border p-3">{{ req.ask }}</li>
+    <li class="list-group-item list-group-item-light border p-3" id="someid">{{ req.ask }}</li>
     {% if req.output_success == False %}
     <li class="list-group-item list-group-item-danger border p-2">{{ req.output|replace('\n', '<br>')|safe }}</li>
     {% else %}
@@ -25,7 +21,7 @@
 <div>
   <form method="POST" id="ai_form">
     <div class="form-floating">
-      <textarea name="ai_request" id="ai_request" class="form-control" placeholder="Leave a comment here" minlength="3"></textarea>
+      <textarea name="ai_request" id="ai_request" class="form-control" placeholder="Leave a comment here" minlength="3" required></textarea>
       <label for="ai_request">Введите ваш запрос</label>
     </div>
     <br>
@@ -34,9 +30,7 @@
         <img src="{{ url_for('static', filename='gear.svg') }}">
       </button>
       </button>
-      <button type="submit" class="btn btn-primary btn-lg" id="ai_request_button" onclick="displaySnipper()">
-        <span class="spinner-border spinner-border-sm" id="ai_request_spinner" role="status" aria-hidden="true"
-              style="display: none;"></span>
+      <button type="submit" class="btn btn-primary btn-lg" id="ai_request_button" onclick="displaySninner()">
         Generate request
       </button>
       <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">

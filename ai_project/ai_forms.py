@@ -17,7 +17,7 @@ class AuthUserForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired(), 
                                                      Length(min=6, max=32),
                                                      validate_no_cyrillic_chars])
-    c_password = PasswordField('Confirm password', validators=[DataRequired(), 
+    c_password = PasswordField('Confirm password', validators=[DataRequired(),
                                                                Length(min=6, max=32),
                                                                EqualTo('password', message='Пароль должен совпадать'),
                                                                ])

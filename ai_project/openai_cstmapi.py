@@ -8,7 +8,7 @@ async def get_imgmodel_request(content):
     openai.organization = "org-MB9HPIF9vvXS6JqcEosUqMxM"
     openai.api_key = current_user.openai_api
     
-    if 'кот в сапогах' in content:
+    if any([ch for ch in content if 'а' <= ch <= 'я' or 'А' <= ch <= 'Я']):
         
         content = translate(content)
         content = content.replace('puss in boots', 'cat in boots')
@@ -31,7 +31,6 @@ async def get_imgmodel_request(content):
 
 async def get_chatmodel_request(content):
 
-    # print(os.system('pwd'))
     openai.organization = "org-MB9HPIF9vvXS6JqcEosUqMxM"
     openai.api_key = current_user.openai_api
 
@@ -44,11 +43,8 @@ async def get_chatmodel_request(content):
             ],
         )
 
-        # print(content)
         g.chat_output = completion.choices[0]['message']['content']
         g.chat_success = True
-
-        # print(g.chat_output.encode('unicode_escape').decode())
 
     except Exception as ex:
         g.chat_output = str(ex)

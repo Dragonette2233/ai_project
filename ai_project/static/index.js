@@ -26,20 +26,36 @@ function deleteNote(noteID) {
     });
 }
 
-function displaySnipper() {
+function displaySninner() {
 
-    const spinner = document.getElementById('ai_request_spinner');
+    // const spinner = document.getElementById('ai_request_spinner');
     const form = document.getElementById('ai_form');
-    const textarea = document.getElementById('ai_request');
+    const textAreaElement = document.getElementById('ai_request');
 
-    form.addEventListener('submit', function(event) {
-      if (textarea.value.length <= 3) {
-        event.preventDefault(); // отменяем отправку формы
-        
-      }
-      else {
-        spinner.style.display = "inline-block";
-      }
-    });
+    var fatherElement = document.getElementById("ai_request_response");
+    var targetElement = document.getElementById('response-list');
     
+    // spinner.style.display = "inline-block";
+    if (textAreaElement.value.length >= 3) {
+      var spinnerElement = document.createElement('span')
+      var newRequest = document.createElement('li');
+      var newResponse = document.createElement('li');
+
+      newRequest.textContent = textAreaElement.value;
+      newResponse.textContent = 'Generating response';
+      newRequest.className = 'list-group-item list-group-item-light border p-3';
+      newResponse.className = 'list-group-item list-group-item-secondary';
+      spinnerElement.className = 'spinner-border spinner-border-sm ml-3';
+      spinnerElement.role = 'status';
+      spinnerElement.ariaHidden = 'true';
+
+      targetElement.appendChild(newRequest);
+      targetElement.appendChild(newResponse);
+      newResponse.appendChild(spinnerElement);
+
+      fatherElement.scrollTop = element.scrollHeight;
+      
+      
+    }
+
 };

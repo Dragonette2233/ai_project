@@ -5,7 +5,6 @@ from flask import (
     flash,
     redirect,
     url_for,
-    g,
     session,
 )
 from flask_login import login_user, login_required, logout_user, current_user
@@ -36,6 +35,9 @@ def sign_in():
 
         else:
             flash("Пароль или email не совпадают.", category="error")
+    else:
+        for error in form.errors.values():
+            flash(f"{error[0]}", category='error')
 
     return render_template("./auth/sign_in.html", user=current_user, form=form)
 
