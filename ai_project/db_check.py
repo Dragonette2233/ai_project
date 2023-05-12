@@ -8,7 +8,7 @@ cur = conn.cursor()
 
 # выполнение запроса и получение всех строк
 
-cur.execute("SELECT * FROM chathistory")
+cur.execute("SELECT u.login, b.title FROM users u LEFT JOIN blog b ON b.title=u.id")
 row = cur.fetchone()
 
 # вывод всех строк

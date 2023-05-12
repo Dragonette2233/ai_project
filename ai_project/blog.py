@@ -2,7 +2,6 @@ from flask import (
     Blueprint,
     render_template,
     request,
-    jsonify,
     flash,
     redirect,
     url_for,
@@ -16,15 +15,15 @@ from .validators import validate_file
 from .models import User, Blog, db
 from markupsafe import escape
 from werkzeug.utils import secure_filename
-import secrets
 import os
 
-
-def delete_photo():
-    ...
+bp = Blueprint("blog", __name__)
 
 def get_post(id, check_author=True, is_all=False):
     
+    if id is None:
+        return None
+
     post = Blog.query.filter_by(id=id).first()
 
     if post is None:
@@ -35,7 +34,6 @@ def get_post(id, check_author=True, is_all=False):
     
     return post
 
-bp = Blueprint("blog", __name__)
 
 @bp.route('/', methods=('GET', 'POST'))
 @login_required
@@ -57,16 +55,9 @@ def get_image(filename):
 @bp.route('/<int:id>/update', methods=('GET', 'POST',))
 @bp.route('/create', methods=('GET', 'POST',))
 @login_required
-def create_update(id=None):
+def create_update(id=None, state='create'):
 
-    if id:
-
-        post = get_post(id)
-        state = 'update'
-        
-    else:
-        post = None
-        state = 'create'
+    post = get_post(id)
 
     if request.method == 'POST':
         

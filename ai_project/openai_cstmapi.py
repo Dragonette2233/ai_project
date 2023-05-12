@@ -2,12 +2,16 @@ import openai
 from mtranslate import translate
 from flask import g
 from flask_login import current_user
+from .key_cryptograpy import decrypt_cipher
+from openai.error import AuthenticationError
 
 async def get_imgmodel_request(content):
 
+    decrypted_apikey = decrypt_cipher(current_user.openai_api)
+
     openai.organization = "org-MB9HPIF9vvXS6JqcEosUqMxM"
-    openai.api_key = current_user.openai_api
-    
+    openai.api_key = decrypted_apikey
+
     if any([ch for ch in content if 'а' <= ch <= 'я' or 'А' <= ch <= 'Я']):
         
         content = translate(content)
@@ -31,8 +35,10 @@ async def get_imgmodel_request(content):
 
 async def get_chatmodel_request(content):
 
+    decrypted_apikey = decrypt_cipher(current_user.openai_api)
+
     openai.organization = "org-MB9HPIF9vvXS6JqcEosUqMxM"
-    openai.api_key = current_user.openai_api
+    openai.api_key = decrypted_apikey
 
     try:
 
@@ -45,6 +51,10 @@ async def get_chatmodel_request(content):
 
         g.chat_output = completion.choices[0]['message']['content']
         g.chat_success = True
+
+    except AuthenticationError:
+        g.chat_output = 'API ключ недействительный или неверный'
+        g.chat_success = False
 
     except Exception as ex:
         g.chat_output = str(ex)

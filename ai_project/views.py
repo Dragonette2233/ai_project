@@ -17,6 +17,7 @@ from flask import (
 
 from flask_login import login_required, current_user
 from .models import User, Note, AiHistory, ImgHistory, db
+from .key_cryptograpy import generete_cipher
 
 bp = Blueprint("views", __name__)
 
@@ -93,8 +94,7 @@ def delete_history(model):
 async def assistante():
 
     if request.method == "POST":
-        # print(request.form)
-        # current_app.logger.info(g.)
+        
         request_for_ask = request.form["ai_request"]
         if request_for_ask != "" and len(request_for_ask) > 2:
             g.chat_answer = await get_chatmodel_request(content=request_for_ask)
@@ -108,8 +108,7 @@ async def assistante():
             db.session.add(ai_req_resp)
             db.session.commit()
             return redirect(url_for('views.assistante'))
-            # request.form.clear()
-
+            
         else:
             flash('Too short request for AI. User more than 2 characters',
                   category='error')
@@ -166,14 +165,19 @@ def account():
     if request.method == 'POST':
         api_key = request.form.get('apik')
         if len(api_key) > 20:
+            
+            api_key = generete_cipher(api_key)
 
-            user = User.query.get(current_user.id)
-            user.openai_api = api_key
+            User.query.filter_by(id=current_user.id).update(
+                {
+                    User.openai_api: api_key
+                }
+            )
             db.session.commit()
-            flash('API key updated')
-        
+            flash('API ключ обновлен')
+            
         else:
-            flash('API key should be more than 20 characters')
+            flash('API ключ слишком короткий')
 
         new_password = request.form.get('new_password')
 

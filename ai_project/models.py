@@ -12,7 +12,7 @@ class User(db.Model, UserMixin):
     login = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(150))
-    openai_api = db.Column(db.String(250))
+    openai_api = db.Column(db.LargeBinary())
     notes = db.relationship("Note")
     chathistory = db.relationship("AiHistory")
     imghistory = db.relationship("ImgHistory")
