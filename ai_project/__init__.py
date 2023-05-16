@@ -47,7 +47,7 @@ def create_app():
     db.init_app(app)
     login_manager = LoginManager(app)
     login_manager.login_view = 'auth.sign_in'
-    login_manager.login_message = 'Вам необходимо сначала авторизоваться'
+    login_manager.login_message = 'Необходима авторизация'
     # login_manager.
     # login_manager.init_app(app)
 

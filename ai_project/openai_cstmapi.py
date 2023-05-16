@@ -1,6 +1,6 @@
 import openai
 from mtranslate import translate
-from flask import g
+from flask import g, current_app
 from flask_login import current_user
 from .key_cryptograpy import decrypt_cipher
 from openai.error import AuthenticationError
@@ -45,12 +45,15 @@ async def get_chatmodel_request(content):
         completion = await openai.ChatCompletion.acreate(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "user", "content": content}
+                {"role": "user", 
+                 "content": content,
+                 "name": current_user.login,}
             ],
         )
 
         g.chat_output = completion.choices[0]['message']['content']
         g.chat_success = True
+        # current_app.logger.info(completion.choices) 
 
     except AuthenticationError:
         g.chat_output = 'API ключ недействительный или неверный'
