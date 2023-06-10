@@ -8,7 +8,7 @@ from wtforms import (
     SubmitField,
 )
 from wtforms.validators import DataRequired, Length, EqualTo
-from .validators import validate_no_cyrillic_chars
+from .validators import validate_no_cyrillic_chars, validate_file
 
 
 class AuthUserForm(FlaskForm):
@@ -31,12 +31,6 @@ class LoginUserForm(FlaskForm):
     submit = SubmitField('Войти')
 
 class BlogPostForm(FlaskForm):
-    title = StringField('Title', validators=[DataRequired(), Length(min=2, max=50)])
-    body = TextAreaField('Body', validators=[DataRequired()])
-    file = FileField('Photo')
-    
-    def validate_file(form, field):
-        if field.data:
-            filename = secure_filename(field.data.filename)
-            if not any([filename.endswith('.jpg'), filename.endswith('.jpeg'), filename.endswith('.png')]):
-                raise ValidationError('Only jpg, jpeg and png files are allowed.')
+    title = StringField('Заголовок', validators=[DataRequired(), Length(min=2, max=50)])
+    body = TextAreaField('Содержание', validators=[DataRequired(), Length(min=2, max=400)])
+    file = FileField('Фото (Не более 5МБ)', validators=[validate_file])

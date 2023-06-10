@@ -49,7 +49,7 @@
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="navbarDarkDropdownMenuLink">
                   <li><a class="dropdown-item" href="{{ url_for('views.account') }}">Settings</a></li>
-                  <li><a class="dropdown-item" href="{{ url_for('views.support') }}">FAQ</a></li>
+                  <li><a class="dropdown-item" href="{{ url_for('views.faq') }}">FAQ</a></li>
                   <li><a class="dropdown-item" href="{{ url_for('views.delete_history', model='assistante') }}" 
                           onclick="return confirm('Delete all chat history?')">Clear chat history</a></li>
                   <li><a class="dropdown-item" href="{{ url_for('views.delete_history', model='image_gen') }}" 

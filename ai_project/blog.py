@@ -8,13 +8,14 @@ from flask import (
     abort,
     current_app,
     send_from_directory,
+    jsonify
 )
 
 from flask_login import login_required, current_user
 from .validators import validate_file
 from .models import User, Blog, db
+from .ai_forms import BlogPostForm
 from markupsafe import escape
-from werkzeug.utils import secure_filename
 import os
 
 bp = Blueprint("blog", __name__)
@@ -52,64 +53,67 @@ def get_image(filename):
     return send_from_directory(post_route, filename)
 
 
-@bp.route('/<int:id>/update', methods=('GET', 'POST',))
-@bp.route('/create', methods=('GET', 'POST',))
+@bp.errorhandler(413)
+def handle_request_entity_too_large(error):
+    # flash('Вы пытаетесь загрузить слишком большой файл, превышающий 5МБ', category='error')
+    return 'Cлишком большой файл'
+
+
+@bp.route('/<int:id>/<string:state>', methods=('GET', 'POST',))
+@bp.route('/<string:state>', methods=('GET', 'POST',))
 @login_required
-def create_update(id=None, state='create'):
-
+def create_update(error=None, id=None, state=None):
+    
     post = get_post(id)
-
-    if request.method == 'POST':
+    form = BlogPostForm(body=post.body if post else '')
+    
+    if request.method == 'POST' and form.validate_on_submit():
         
-        title = escape(request.form['title'])
-        body = escape(request.form['body'])
-        file = request.files['file']
+        title = form.title.data
+        body = form.body.data
+        file = form.file.data
 
-        filename = validate_file(secure_filename(file.filename))
-
-        if not isinstance(filename, str):
-
-            flash(filename[0], category=filename[1])
-            return render_template('blog/create.html', post=post, state=state)
-
-        if filename != 'default.jpg':
-            filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-            file.save(filepath)
-
-        if id:
+        print(file.filename)
+        
+        if state == 'create' and file.filename != 'default.jpg':
+            save_post_photo(file=file)
             
-            if file.filename != '' and post.photo != 'default.jpg':
-                post_filename = os.path.join(current_app.instance_path, 'post_photos', post.photo)
-                os.system(f'rm {post_filename}')
+        elif state == 'update' and file.filename != 'default.jpg':
+            delete_post_photo(filename=post.photo)
+            save_post_photo(file=file)
+
+        if state == 'update':
             
-            if file.filename != '':
-
-                post.photo = filename
-
             Blog.query.filter_by(id=id).update(
-                {
-                    Blog.title: title,
-                    Blog.body: body,
-                    Blog.photo: post.photo if file.filename != '' else Blog.photo
-                }
-            )
-
+                    {
+                        Blog.title: title,
+                        Blog.body: body,
+                        Blog.photo: file.filename if file.filename 
+                                                  != 'default.jpg' 
+                                                  else Blog.photo
+                    }
+                )
             db.session.commit()
+    
+        else:
 
-            return redirect(url_for('blog.index'))
-            
-        new_post = Blog(
-            title=title,
-            body=body,
-            author_id=current_user.id,
-            photo=filename
-        )
-        db.session.add(new_post)
-        db.session.commit()
+            new_post = Blog(
+                title=title,
+                body=body,
+                author_id=current_user.id,
+                photo=file.filename
+            )
+            db.session.add(new_post)
+            db.session.commit()
     
         return redirect(url_for('blog.index'))
-    
-    return render_template('blog/create.html', post=post, state=state)
+
+    else:
+        for error in form.errors.values():
+            flash(error[0])
+
+    return render_template('blog/create.html', post=post, state=state, form=form)
+        
 
 @bp.route('/<int:user_id>/full-remove')
 @login_required
@@ -132,8 +136,7 @@ def delete(id, all=False):
     post = get_post(id)
 
     if post.photo != 'default.jpg':
-        post_filename = os.path.join(current_app.instance_path, 'post_photos', post.photo)
-        os.system(f'rm {post_filename}')
+        delete_post_photo(filename=post.photo)
 
     db.session.delete(post)
     db.session.commit()
@@ -142,3 +145,12 @@ def delete(id, all=False):
     # db.execute('DELETE FROM post WHERE id = ?', (id,))
     #
     return redirect(url_for('blog.index'))
+
+def save_post_photo(file):
+    filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], file.filename)
+    file.save(filepath)
+
+    
+def delete_post_photo(filename: str):
+    post_filename = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+    os.system(f'rm {post_filename}')

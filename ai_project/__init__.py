@@ -17,6 +17,7 @@ def create_app():
         SQLALCHEMY_DATABASE_URI='sqlite:///{DB_NAME}'.format(DB_NAME=DB_NAME),
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         UPLOAD_FOLDER = os.path.join(app.instance_path, 'post_photos'),
+        MAX_CONTENT_LENGTH=5 * 1024 * 1024
         # UPLOAD_ROUTE = os.path.join(app.instance_path, 'post_photos')
     )
 
@@ -53,6 +54,8 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(id):
+
+        print(id)
 
         return User.query.get(int(id))
 

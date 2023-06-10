@@ -5,11 +5,11 @@ from flask_login import current_user
 from .key_cryptograpy import decrypt_cipher
 from openai.error import AuthenticationError
 
+
+
 async def get_imgmodel_request(content):
 
     decrypted_apikey = decrypt_cipher(current_user.openai_api)
-
-    openai.organization = "org-MB9HPIF9vvXS6JqcEosUqMxM"
     openai.api_key = decrypted_apikey
 
     if any([ch for ch in content if 'а' <= ch <= 'я' or 'А' <= ch <= 'Я']):
@@ -27,6 +27,10 @@ async def get_imgmodel_request(content):
 
         g.img_output = completion['data']
         g.img_success = True
+        
+    except AuthenticationError:
+        g.img_output = 'API ключ недействительный или неверный'
+        g.img_success = False
 
     except Exception as ex:
         g.img_output = str(ex)
@@ -36,8 +40,6 @@ async def get_imgmodel_request(content):
 async def get_chatmodel_request(content):
 
     decrypted_apikey = decrypt_cipher(current_user.openai_api)
-
-    openai.organization = "org-MB9HPIF9vvXS6JqcEosUqMxM"
     openai.api_key = decrypted_apikey
 
     try:

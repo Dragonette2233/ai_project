@@ -53,8 +53,12 @@ def delete_note():
 
     return jsonify({})
 
-@bp.post('/support')
-def feedback():
+@bp.route('/faq', methods=["GET", "POST"])
+def faq():
+
+    if request.method == "GET":
+        return render_template("faq.html")
+
 
     with open(f'logs/feedback_from_{current_user.login}', 'a+') as feedfile:
 
@@ -63,12 +67,7 @@ def feedback():
     
     flash('Сообщение отправлено.', category='success')
     
-    return redirect(url_for('views.support'))
-
-@bp.get("/support")
-@login_required
-def support():
-    return render_template("support.html")
+    return redirect(url_for('views.faq'))
 
 
 @bp.route('/assistante/delete-history/<string:model>')
@@ -96,23 +95,21 @@ async def assistante():
     if request.method == "POST":
         
         request_for_ask = request.form["ai_request"]
-        if request_for_ask != "" and len(request_for_ask) > 2:
-            g.chat_answer = await get_chatmodel_request(content=request_for_ask)
+        
+        """
+            Response message and success stored in "g" object 
+        """
+        await get_chatmodel_request(content=request_for_ask)
 
-            ai_req_resp = AiHistory(
-                ask=markupsafe.escape(request_for_ask),
-                output=markupsafe.escape(g.chat_output),
-                output_success=g.chat_success,
-                user_id=current_user.id,
-            )
-            db.session.add(ai_req_resp)
-            db.session.commit()
-            return redirect(url_for('views.assistante'))
-            
-        else:
-            flash('Too short request for AI. User more than 2 characters',
-                  category='error')
-            return redirect(url_for('views.assistante'))
+        ai_req_resp = AiHistory(
+            ask=markupsafe.escape(request_for_ask),
+            output=markupsafe.escape(g.chat_output),
+            output_success=g.chat_success,
+            user_id=current_user.id,
+        )
+        db.session.add(ai_req_resp)
+        db.session.commit()
+        return redirect(url_for('views.assistante'))
             
     return render_template("ai_assist.html")
 

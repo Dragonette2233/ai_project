@@ -6,7 +6,7 @@
 
 {% block content %}
 <hr>
-  {% if state == 'create'%}
+  {% if state == 'create' %}
   <h1 align="center">Создать пост</h1>
   {% else %}
   <h1 align="center">Обновить пост</h1>
@@ -14,27 +14,28 @@
 <hr>
 <div class="border border-light" style="padding: 15px;">
   <form method="POST" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
     <div class="mb-3">
-      <label for="title" class="form-label">Заголовок</label>
+      {{ form.title.label(for="title", class="form-label") }}
+      <!-- <label for="title" class="form-label">Заголовок</label> -->
       {% if post %}
-      <input name="title" class="form-control" id="title" value="{{ post.title }}" required minlength="3">
+      <!-- <input name="title" class="form-control" id="title" value="{{ post.title }}" required minlength="3"> -->
+      {{ form.title(id="title", class="form-control", value=post.title) }}
       {% else %}
-      <input name="title" class="form-control" id="title" value="{{ request.form['title'] }}" required minlength="3">
+      {{ form.title(id="title", class="form-control") }}
       {% endif %}
     </div>
     <div class="mb-3">
-      <label for="formFile" class="form-label">Фото</label>
-      <input class="form-control" type="file" id="formFile" name="file">
+      {{ form.file.label(for="formFile", class="form-label") }}
+      <!-- <label for="formFile" class="form-label">Фото</label> -->
+      <!-- <input class="form-control" type="file" id="formFile" name="file"> -->
+      {{ form.file(class="form-control", id="formFile", accept="image/*") }}
     </div>
     <div class="mb-3">
-      <label for="body" class="form-label">Содержание</label>
-      {% if request.form.get('body') is not none %}
-      <textarea class="form-control" id="body" name="body" rows="10"required>{{ request.form.get('body') }}</textarea>
-      {% elif post %}
-      <textarea class="form-control" id="body" name="body" rows="10"required>{{ post.body }}</textarea>
-      {% else %}
-      <textarea class="form-control" id="body" name="body" rows="10"required></textarea>
-      {% endif %}
+      <!-- <label for="body" class="form-label">Содержание</label> -->
+      {{ form.body.label(class="form-label") }}
+      {{ form.body(id="body", rows="10", class="form-control") }}
+     
     </div>
     <button type="submit" class="btn btn-secondary" style="margin-right: 10px;">Сохранить</button>
     <a type="button" class="btn btn-warning"
