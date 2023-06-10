@@ -1,4 +1,4 @@
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet, InvalidToken
 import base64
 import os
 
@@ -13,7 +13,10 @@ def decrypt_cipher(cipher):
 
     SECRET_KEY = base64.urlsafe_b64decode(os.getenv('CRYPT'))
     cipher_suite = Fernet(SECRET_KEY)
-    unciphered_apikey = cipher_suite.decrypt(cipher).decode('utf-8')
+    try:
+        unciphered_apikey = cipher_suite.decrypt(cipher).decode('utf-8')
+    except InvalidToken:
+        return 0
     return unciphered_apikey
 
     
